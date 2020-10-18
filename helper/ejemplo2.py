@@ -2,16 +2,13 @@ import random
 from pyeasyga import pyeasyga
 
 # setup seed data
-seed_data = [0, 1, 2, 3, 4, 5, 6, 7]
+seed_data = [0,2,1,4,3]
 
 # initialise the GA
-ga = pyeasyga.GeneticAlgorithm(seed_data,
-                            population_size=200,
-                            generations=100,
-                            crossover_probability=0.8,
-                            mutation_probability=0.2,
-                            elitism=True,
-                            maximise_fitness=False)
+ga = pyeasyga.GeneticAlgorithm(
+    seed_data,
+    population_size=300
+    )
 
 # define and set function to create a candidate solution representation
 def create_individual(data):
@@ -21,49 +18,29 @@ def create_individual(data):
 
 ga.create_individual = create_individual
 
-# define and set the GA's crossover operation
-def crossover(parent_1, parent_2):
-    crossover_index = random.randrange(1, len(parent_1))
-    child_1a = parent_1[:crossover_index]
-    child_1b = [i for i in parent_2 if i not in child_1a]
-    child_1 = child_1a + child_1b
-
-    child_2a = parent_2[crossover_index:]
-    child_2b = [i for i in parent_1 if i not in child_2a]
-    child_2 = child_2a + child_2b
-
-    return child_1, child_2
-
-ga.crossover_function = crossover
-
-# define and set the GA's mutation operation
-def mutate(individual):
-    mutate_index1 = random.randrange(len(individual))
-    mutate_index2 = random.randrange(len(individual))
-    individual[mutate_index1], individual[mutate_index2] = individual[mutate_index2], individual[mutate_index1]
-
-ga.mutate_function = mutate
-
-# define and set the GA's selection operation
-def selection(population):
-    return random.choice(population)
-
-ga.selection_function = selection
-
 # define a fitness function
 def fitness (individual, data):
-    collisions = 0
-    for item in individual:
-        item_index = individual.index(item)
-        for elem in individual:
-            elem_index = individual.index(elem)
-            if item_index != elem_index:
-                if item - (elem_index - item_index) == elem \
-                    or (elem_index - item_index) + item == elem:
-                    collisions += 1
-    return collisions
+    fitness = 0
+    #print("indi: ", individual)
+    for i, number in enumerate(individual):
+        if i+1 < len(individual):
+            if number < individual[i+1]:
+                fitness += 1
+            else:
+                fitness -= 1
+            if i != 0:
+                if number > individual[i-1]:
+                    fitness += 1
+                else:
+                    fitness -= 1
+        else:
+            if number > individual[i-1]:
+                fitness += 1
+            else:
+                fitness = 0
+    return fitness
 
 ga.fitness_function = fitness       # set the GA's fitness function
 ga.run()                            # run the GA
 
-print( ga.best_individual())
+print(ga.best_individual())
