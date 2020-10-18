@@ -7,7 +7,7 @@ seed_data = [0,2,1,4,3]
 # initialise the GA
 ga = pyeasyga.GeneticAlgorithm(
     seed_data,
-    population_size=300
+    population_size=400
     )
 
 # define and set function to create a candidate solution representation
