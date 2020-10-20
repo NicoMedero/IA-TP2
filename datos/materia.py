@@ -62,14 +62,14 @@ class Dia(Enum):
     NAA = Values3.SIETE.value
 
 class Horario(Enum):
-    CERO = Values3.CERO.value
-    UNO = Values3.UNO.value
-    DOS = Values3.DOS.value
-    TRES = Values3.TRES.value
-    CUATRO = Values3.CUATRO.value
-    CINCO = Values3.CINCO.value
-    NA = Values3.SEIS.value
-    NAA = Values3.SIETE.value
+    CERO = 0
+    UNO = 1
+    DOS = 2
+    TRES = 3
+    CUATRO = 4
+    CINCO = 5
+    NA = 6
+    NAA = 7
 
 
 def aplica(list):

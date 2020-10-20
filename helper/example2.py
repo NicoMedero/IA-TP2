@@ -2,12 +2,33 @@ from pyeasyga.pyeasyga import GeneticAlgorithm
 from random import random
 
 data = [('pear', 50), ('apple', 35), ('banana', 40)]
+
 ga = GeneticAlgorithm(data, population_size=40,
                             generations=20,
                             crossover_probability=0.8,
                             mutation_probability=0.9,
                             elitism=True,
                             maximise_fitness=True)
+
+def fitness (individual, data):
+    
+    fitness = 0
+    
+    if individual.count(1) == 3:
+        for (selected, (fruit, profit)) in zip(individual, data):
+            if selected:
+                fitness += profit
+
+    return fitness
+
+ga.fitness_function = fitness
+ga.run()
+print (ga.best_individual())
+
+for individual in ga.last_generation():
+    print (individual)
+
+
 
 """
 def create_individual(data):
@@ -40,19 +61,3 @@ def selection(population):
 
 ga.selection_function = selection
 """
-
-def fitness (individual, data):
-    fitness = 0
-    if individual.count(1) == 2:
-        for (selected, (fruit, profit)) in zip(individual, data):
-            if selected:
-                fitness += profit
-    return fitness
-
-ga.fitness_function = fitness
-ga.run()
-print (ga.best_individual())
-
-for individual in ga.last_generation():
-    print (individual)
-    
