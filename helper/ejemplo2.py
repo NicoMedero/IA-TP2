@@ -2,12 +2,12 @@ import random
 from pyeasyga import pyeasyga
 
 # setup seed data
-seed_data = [0,2,1,4,3]
+seed_data = [0,2,1,4,3,6,5]
 
 # initialise the GA
 ga = pyeasyga.GeneticAlgorithm(
     seed_data,
-    population_size=400
+    population_size=800
     )
 
 # define and set function to create a candidate solution representation

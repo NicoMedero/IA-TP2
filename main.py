@@ -1,4 +1,4 @@
-from pyeasyga import pyeasyga
+from pyeasyga.pyeasyga import GeneticAlgorithm
 from datos.persona import *
 from datos.condiciones import *
 import random
@@ -13,10 +13,38 @@ datos = [
 ]
 
 
-def existenDatosDuplicados(data):
+def create_individual(data):
+    individual = data[:]
+    for persona in individual:
+        persona.update({'casa': generate_valid_range(random.randrange(0,5))})
+        persona.update({'color': generate_valid_range(random.randrange(0,5))})
+        persona.update({'bebida': generate_valid_range(random.randrange(0,5))})
+        persona.update({'cigarrillo': generate_valid_range(random.randrange(0,5))})
+        persona.update({'mascota': generate_valid_range(random.randrange(0,5))})
+    return individual
+
+def generate_valid_range(range):
     
+    if range == 0:
+        return Values.UNO.value
+    if range == 1:
+        return Values.DOS.value
+    if range == 2:
+        return Values.TRES.value
+    if range == 3:
+        return Values.CUATRO.value
+    if range == 4:
+        return Values.CINCO.value
+
+
+def existenDatosDuplicados(data):
+
     for index, persona in enumerate(data):
+        if persona == 0 or persona == 1:
+            return True
         for index1, persona1 in enumerate(data):
+            if persona1 == 0 or persona1 == 1:
+                return True
             if index < index1:
                 if persona.get('casa') == persona1.get('casa'):
                     return True
@@ -33,6 +61,8 @@ def existenDatosDuplicados(data):
 def existenDatosInvalidos(data):
     
     for persona in data:
+        if persona == 0 or persona == 1:
+            return True
         if not aplica(persona.get('casa')):
             return True
         if not aplica(persona.get('color')):
@@ -120,65 +150,47 @@ def mutarLista(lista, bit_a_mutar):
     
     return lista
 
+resultantes = []
+
 #Defino la función Fitness
-def fitnessFunction(data):
+def fitness(individual, data):
     fitness = 0
 
-    fitness += britanicoCasaRoja(data)
-    fitness += suecoTienePerro(data)
-    fitness += danesTomaTe(data)
-    fitness += casaVerdeIzqACasaBlanca(data)
-    fitness += casaVerdeTomaTe(data)
-    fitness += fumaPallMallTienePajaro(data)
-    fitness += casaAmarillaFumaDunhill(data)
-    fitness += casaDelCentroTomaLeche(data)
-    fitness += noruegoEnPrimeraCasa(data)
-    fitness += fumaBrendsYVecinoTieneGato(data)
-    fitness += tieneCaballoYVecinoFumaDunhill(data)
-    fitness += fumaBluemastersYBebeCerveza(data)
-    fitness += alemanFumaPrince(data)
-    fitness += noruegoJuntoACasaAzul(data)
-    fitness += fumaBrendsYVecinoTomaAgua(data)
+    if existenDatosDuplicados(individual):
+        fitness -= 1
+    
+    if existenDatosInvalidos(individual):
+        fitness -= 1
+
+    if not existenDatosInvalidos(individual) and not existenDatosDuplicados(individual):
+        fitness += britanicoCasaRoja(individual)
+        fitness += suecoTienePerro(individual)
+        fitness += danesTomaTe(individual)
+        fitness += casaVerdeIzqACasaBlanca(individual)
+        fitness += casaVerdeTomaTe(individual)
+        fitness += fumaPallMallTienePajaro(individual)
+        fitness += casaAmarillaFumaDunhill(individual)
+        fitness += casaDelCentroTomaLeche(individual)
+        fitness += noruegoEnPrimeraCasa(individual)
+        fitness += fumaBrendsYVecinoTieneGato(individual)
+        fitness += tieneCaballoYVecinoFumaDunhill(individual)
+        fitness += fumaBluemastersYBebeCerveza(individual)
+        fitness += alemanFumaPrince(individual)
+        fitness += noruegoJuntoACasaAzul(individual)
+        fitness += fumaBrendsYVecinoTomaAgua(individual)
+        resultantes.append({'fitness': fitness, 'individual': individual})
 
     return fitness
 
+ga = GeneticAlgorithm(
+        datos,
+        population_size=2000
+    )
 
-iteraciones = 100000
-fitness = 0
-maxFitness = 0
-datos_mutados = []
-datos_cruzados = []
-datos_mutados = datos
+ga.create_individual = create_individual
+ga.fitness_function = fitness
 
-print("Datos sin mutar: ")
-for persona in datos:
-    print(persona)
+ga.run()
 
-while(iteraciones > 0):
-
-    fitness = fitnessFunction(datos)
-
-    if maxFitness < fitness:
-        maxFitness = fitness
-    
-    if fitness == 15:
-        break
-
-    datos_cruzados = cruzamiento(datos)
-
-    datos_mutados = mutate(datos_cruzados)
-
-    if not existenDatosDuplicados(datos_mutados):
-        datos = datos_mutados
-    
-    if not existenDatosInvalidos(datos_mutados):
-        datos = datos_mutados
-
-    iteraciones -= 1
-
-print("Fitness: ", maxFitness)
-print("Existen datos duplicados: ", existenDatosDuplicados(datos))
-print("Existen datos inválidos: ", existenDatosInvalidos(datos))
-print("Datos mutados:")
-for persona in datos:
-    print(persona)
+last = resultantes.pop()
+print(last.get('individual'))
