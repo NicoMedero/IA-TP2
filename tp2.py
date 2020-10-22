@@ -21,8 +21,8 @@ data = [
     {'materia': Materia.CUATRO.value, 'dia1': Dia.SABADO.value, 'dia2': Dia.NA.value, 'turno1': Turno.MAÑANA.value, 'turno2': Turno.NA.value, 'horario1i': Horario.CERO.value, 'horario2i': Horario.NA.value, 'horario1f': Horario.CINCO.value, 'horario2f': Horario.NA.value},
 ]
 
-ga = GeneticAlgorithm(data, population_size=1000,
-                            generations=20,
+ga = GeneticAlgorithm(data, population_size=100,
+                            generations=25,
                             crossover_probability=0.8,
                             mutation_probability=0.04,
                             elitism=True,
@@ -65,14 +65,14 @@ def restricciones(materias):
                             materias[m].get('horario1i'), materias[m].get('horario1f'), materias[m].get('horario2i'), materias[m].get('horario2f'), 
                             materias[n].get('horario1i'), materias[n].get('horario1f'), materias[n].get('horario2i'), materias[n].get('horario2f')
                         ):
-                        suma += -30
+                        suma += -70
 
                     else:
-                        suma += 10
+                        suma += 50
                 else:
-                    suma += 20
+                    suma += 70
             else:
-                suma += 30
+                suma += 100
 
         materiaDesc.append(materias[m].get('materia'))
 
@@ -82,6 +82,7 @@ def restricciones(materias):
 
     return suma
 
+ac = []
 
 def fitness (individual, data):
     fitness = 0
@@ -96,13 +97,20 @@ def fitness (individual, data):
 
         fitness += restricciones(materiasSelec)
 
+    ac.append(fitness)
     return fitness
+
+#ga.selection_function = ga.random_selection
 
 ga.fitness_function = fitness
 ga.run()
 
-print (ga.best_individual())
+print(ga.best_individual())
+
+print(ga.last_generation())
 
 for index, materia in enumerate(ga.best_individual()[1]):
     if materia == 1:
         print(data[index])
+
+#print(ac)
